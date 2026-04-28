@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Share, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Heart, Share, ChevronDown } from 'lucide-react';
 
 const products = [
   {
@@ -46,20 +46,13 @@ const products = [
 export default function PhoneCarousel() {
   const [activeIndex, setActiveIndex] = useState(1);
 
+  // Auto slide right-to-left every 4 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % products.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(timer);
   }, []);
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % products.length);
-  };
-
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + products.length) % products.length);
-  };
 
   const currentProduct = products[activeIndex];
 
@@ -67,10 +60,7 @@ export default function PhoneCarousel() {
     if (index === activeIndex) return 'active';
     if (index === (activeIndex - 1 + products.length) % products.length) return 'prev';
     if (index === (activeIndex + 1) % products.length) return 'next';
-    
-    // For more than 3 items, determine which side it should hide on
-    const diff = (index - activeIndex + products.length) % products.length;
-    return diff > products.length / 2 ? 'hidden-left' : 'hidden-right';
+    return 'hidden';
   };
 
   const prevIndex = (activeIndex - 1 + products.length) % products.length;
@@ -78,7 +68,7 @@ export default function PhoneCarousel() {
 
   return (
     <div className="phone-container">
-      {/* Background blurred items matching the next/prev items */}
+      {/* Background blurred items matching the next/prev items, placed outside the phone */}
       <div className="bg-carousel-item left">
         <img src={products[prevIndex].image} alt="" />
       </div>
@@ -89,68 +79,64 @@ export default function PhoneCarousel() {
       <div className="phone-frame">
         <div className="dynamic-island"></div>
         
-        {/* Top Carousel */}
+        {/* Top Carousel sliding right to left */}
         <div className="carousel-viewport">
           <div className="carousel-track">
             {products.map((product, index) => (
               <div 
                 key={product.id} 
                 className={`carousel-item ${getPositionClass(index)}`}
-                onClick={() => setActiveIndex(index)}
               >
                 <img src={product.image} alt={product.name} />
               </div>
             ))}
           </div>
-          
-          <div className="carousel-nav">
-            <div className="nav-area" onClick={handlePrev}></div>
-            <div className="nav-area" style={{ flex: 1 }} onClick={handleNext}></div>
-          </div>
+          <div className="carousel-indicator"></div>
         </div>
 
-        {/* Product Info */}
-        <div className="product-info" key={activeIndex}> {/* key ensures animation triggers on change */}
-          <div className="product-header">
-            <img src={currentProduct.image} alt="thumbnail" className="product-thumbnail" />
-            <div>
-              <h2 className="product-title">{currentProduct.name}</h2>
-              <span className="product-brand">{currentProduct.brand}</span>
-            </div>
-          </div>
-
-          <div className="score-row">
-            <div className="score-badge">
-              <div className={`score-dot ${currentProduct.scoreColor}`}></div>
+        {/* Product Info sliding bottom to up on change */}
+        <div className="product-info-wrapper">
+          <div className="product-info" key={activeIndex}>
+            <div className="product-header">
+              <img src={currentProduct.image} alt="thumbnail" className="product-thumbnail" />
               <div>
-                <div className="score-value">{currentProduct.score}/100</div>
-                <span className="score-label">{currentProduct.scoreLabel}</span>
+                <h2 className="product-title">{currentProduct.name}</h2>
+                <span className="product-brand">{currentProduct.brand}</span>
               </div>
             </div>
-            <div className="action-icons">
-              <Heart size={20} />
-              <Share size={20} />
-            </div>
-          </div>
 
-          <div className="oliver-card">
-            <div className="oliver-header">
-              <span>🥑</span> Oliver Says:
+            <div className="score-row">
+              <div className="score-badge">
+                <div className={`score-dot ${currentProduct.scoreColor}`}></div>
+                <div>
+                  <div className="score-value">{currentProduct.score}/100</div>
+                  <span className="score-label">{currentProduct.scoreLabel}</span>
+                </div>
+              </div>
+              <div className="action-icons">
+                <Heart size={18} />
+                <Share size={18} />
+              </div>
             </div>
-            <p className="oliver-text">"{currentProduct.oliverSays}"</p>
-          </div>
 
-          <div>
-            <h3 className="breakdown-title">Breakdown</h3>
-            {currentProduct.breakdown.map((item, i) => (
-              <div className="breakdown-item" key={i}>
-                <div className="breakdown-label">
-                  <span style={{color: '#8b8b8b'}}>🌾</span> {item.label}
+            <div className="oliver-card">
+              <div className="oliver-header">
+                <span>🥑</span> Oliver Says:
+              </div>
+              <p className="oliver-text">"{currentProduct.oliverSays}"</p>
+            </div>
+
+            <div>
+              <h3 className="breakdown-title">Breakdown</h3>
+              {currentProduct.breakdown.map((item, i) => (
+                <div className="breakdown-item" key={i}>
+                  <div className="breakdown-label">
+                    <span style={{color: '#a0a0a0'}}>🌾</span> {item.label}
+                  </div>
                   <span className={`badge ${item.status.toLowerCase()}`}>{item.status}</span>
                 </div>
-                <ChevronDown size={16} color="#8b8b8b" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
