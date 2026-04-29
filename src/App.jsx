@@ -5,9 +5,14 @@ import PhoneCarousel from './components/PhoneCarousel';
 function App() {
   return (
     <>
-      <header className="header container">
+      <header className="header">
         <div className="logo">
-          <span>🥑live</span>
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#3d5a1e"/>
+            <ellipse cx="20" cy="20" rx="8" ry="12" fill="#7b8e3a"/>
+            <circle cx="20" cy="16" r="3" fill="#c5d44e"/>
+          </svg>
+          <span>live</span>
         </div>
         
         <nav className="nav-links">

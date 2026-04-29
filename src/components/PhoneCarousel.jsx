@@ -43,48 +43,44 @@ const products = [
   }
 ];
 
+const extendedProducts = [
+  ...products.map(p => ({ ...p, uniqueId: p.id + '-1' })),
+  ...products.map(p => ({ ...p, uniqueId: p.id + '-2' }))
+];
+
 export default function PhoneCarousel() {
   const [activeIndex, setActiveIndex] = useState(1);
 
-  // Auto slide right-to-left every 4 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % products.length);
+      setActiveIndex((prev) => (prev + 1) % extendedProducts.length);
     }, 4000);
     return () => clearInterval(timer);
   }, []);
 
-  const currentProduct = products[activeIndex];
+  const currentProduct = extendedProducts[activeIndex];
 
   const getPositionClass = (index) => {
+    const len = extendedProducts.length;
     if (index === activeIndex) return 'active';
-    if (index === (activeIndex - 1 + products.length) % products.length) return 'prev';
-    if (index === (activeIndex + 1) % products.length) return 'next';
+    if (index === (activeIndex - 1 + len) % len) return 'prev';
+    if (index === (activeIndex - 2 + len) % len) return 'far-prev';
+    if (index === (activeIndex + 1) % len) return 'next';
+    if (index === (activeIndex + 2) % len) return 'far-next';
     return 'hidden';
   };
 
-  const prevIndex = (activeIndex - 1 + products.length) % products.length;
-  const nextIndex = (activeIndex + 1) % products.length;
-
   return (
     <div className="phone-container">
-      {/* Background blurred items matching the next/prev items, placed outside the phone */}
-      <div className="bg-carousel-item left">
-        <img src={products[prevIndex].image} alt="" />
-      </div>
-      <div className="bg-carousel-item right">
-        <img src={products[nextIndex].image} alt="" />
-      </div>
-
       <div className="phone-frame">
         <div className="dynamic-island"></div>
         
         {/* Top Carousel sliding right to left */}
         <div className="carousel-viewport">
           <div className="carousel-track">
-            {products.map((product, index) => (
+            {extendedProducts.map((product, index) => (
               <div 
-                key={product.id} 
+                key={product.uniqueId} 
                 className={`carousel-item ${getPositionClass(index)}`}
               >
                 <img src={product.image} alt={product.name} />
@@ -96,7 +92,7 @@ export default function PhoneCarousel() {
 
         {/* Product Info sliding bottom to up on change */}
         <div className="product-info-wrapper">
-          <div className="product-info" key={activeIndex}>
+          <div className="product-info" key={currentProduct.uniqueId}>
             <div className="product-header">
               <img src={currentProduct.image} alt="thumbnail" className="product-thumbnail" />
               <div>
